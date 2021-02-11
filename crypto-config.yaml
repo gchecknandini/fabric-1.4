@@ -1,0 +1,44 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: Orderer
+    Domain: tcs.com
+    EnableNodeOUs: true
+    # ---------------------------------------------------------------------------
+    # "Specs" - See PeerOrgs below for complete description
+    # ---------------------------------------------------------------------------
+    Specs:
+      - Hostname: orderer
+# ---------------------------------------------------------------------------
+# "PeerOrgs" - Definition of organizations managing peer nodes
+# ---------------------------------------------------------------------------
+PeerOrgs:
+  # ---------------------------------------------------------------------------
+  # Org1
+  # ---------------------------------------------------------------------------
+  - Name: buyer
+    Domain: buyer.tcs.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users:
+      Count: 2
+  # ---------------------------------------------------------------------------
+  # Org2: See "Org1" for full specification
+  # ---------------------------------------------------------------------------
+  - Name: seller
+    Domain: seller.tcs.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users:
+      Count: 2

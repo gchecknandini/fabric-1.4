@@ -1,0 +1,48 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+networks:
+  byfn:
+
+services:
+  ca0:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-buyer
+      - FABRIC_CA_SERVER_PORT=7054
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/fabric-ca-client
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/buyer.tcs.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./userCertS:/etc/hyperledger/fabric-ca-server
+      - ./userCert:/etc/hyperledger/fabric-ca-client
+    container_name: ca_peerBuyer
+    networks:
+      - byfn
+
+  ca1:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-seller
+      - FABRIC_CA_SERVER_PORT=8054
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_CLIENT_HOME=/etc/hyperledger/fabric-ca-client
+    ports:
+      - "8054:8054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/seller.tcs.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./ca_seller_server:/etc/hyperledger/fabric-ca-server
+      - ./ca_seller_client:/etc/hyperledger/fabric-ca-client
+    container_name: ca_peerSeller
+    networks:
+      - byfn

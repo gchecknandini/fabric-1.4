@@ -1,0 +1,62 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  orderer.tcs.com:
+    container_name: orderer.tcs.com
+    extends:
+      file: base/peer-base.yaml
+      service: orderer-base
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/genesis.block
+        - ./crypto-config/ordererOrganizations/tcs.com/orderers/orderer.tcs.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/tcs.com/orderers/orderer.tcs.com/tls:/var/hyperledger/orderer/tls
+        - orderer.tcs.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+
+  peer1.buyer.tcs.com:
+    container_name: peer1.buyer.tcs.com
+    extends:
+      file: base/peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.buyer.tcs.com
+      - CORE_PEER_ADDRESS=peer1.buyer.tcs.com:8051
+      #- CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      #- CORE_PEER_CHAINCODEADDRESS=peer1.buyer.tcs.com:8052
+      # CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.buyer.tcs.com:8051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.buyer.tcs.com:7051
+      - CORE_PEER_LOCALMSPID=BuyerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/buyer.tcs.com/peers/peer1.buyer.tcs.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/buyer.tcs.com/peers/peer1.buyer.tcs.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.buyer.tcs.com:/var/hyperledger/production
+    ports:
+      - 8051:8051
+
+  peer1.seller.tcs.com:
+    container_name: peer1.seller.tcs.com
+    extends:
+      file: base/peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.seller.tcs.com
+      - CORE_PEER_ADDRESS=peer1.seller.tcs.com:10051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.seller.tcs.com:10051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.seller.tcs.com:9051
+      - CORE_PEER_LOCALMSPID=SellerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/seller.tcs.com/peers/peer1.seller.tcs.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/seller.tcs.com/peers/peer1.seller.tcs.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.seller.tcs.com:/var/hyperledger/production
+    ports:
+      - 10051:10051
